@@ -11,9 +11,8 @@ parts = 5
 # Config Variables
 '''Remove the loans.csv file'''
 % rm loans.csv # Comment this line if you are not running this in jupyter notebook
-               # or know what you are doing. Currently this code does not support
-               # partial data. That work has started as we have a read_file method but
-               # it needs more work.
+               # or know what you are doing. Currently this supports partial data
+                # in the form that you must have 0 and 1 at the front but rest must be empty
 
 loan_info_file = "loans.csv"
 
@@ -26,7 +25,6 @@ def is_not_zero_file(fpath):
 def read_file(ppl):
 	with open(loan_info_file, 'r') as f:
 		for l in f.read().split('\n')[1:]:
-			print(l)
 			l = l.strip()
 			if not l:
 				continue
@@ -64,15 +62,15 @@ def create_new(ppl):
 			per = {}
 
 			if i == A:
-				if random.randint(0,50) == 24:
+				if random.randint(0,10) == 1:
 					# Maybe some random people dont get a loan in A
 					per['accepted'] = 0
-					
-				per['accepted'] = 1
+				else:	
+                    per['accepted'] = 1
 				per['creditscore'] = random.randint(353,400)
 				per['riskf'] = 'A'
 			elif i == B:
-				if random.randint(0,25) == 12:
+				if random.randint(0,5) == 1:
 					# Maybe some random people dont get a loan in B
 					per['accepted'] = 0
 					
@@ -89,7 +87,7 @@ def create_new(ppl):
 				per['riskf'] = 'C'
 
 			elif i == D:
-				if random.randint(0,2) == 1:
+				if random.randint(0,3) == 1:
 					per['accepted'] = 1
 				else:
 					per['accepted'] = 0
@@ -98,7 +96,7 @@ def create_new(ppl):
 				per['riskf'] = 'D'
 
 			elif i == E:
-				if random.randint(0,80) == 24:
+				if random.randint(0,40) == 1:
 					# Maybe some random people in E get a loan
 					per['accepted'] = 1
 				else:
@@ -192,6 +190,7 @@ def main():
         if 'amount' not in per:
             per['amount'] = gen_amount(per)
     
+    add_to_file(ppl)
     print("Length of file", loan_info_file, "is:" , len(ppl))
     
 main()

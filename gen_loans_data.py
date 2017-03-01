@@ -1,24 +1,28 @@
 #!/usr/bin/env python3
 import sys
 import os
-import random
-import math
-
-
+from random import randint
+from math import ceil
+from datetime import datetime
 
 # Config Variables
 '''Remove the loans.csv file'''
-% rm loans.csv # Comment this line if you are not running this in jupyter notebook
+# % rm loans.csv # Comment this line if you are not running this in jupyter notebook
                # or know what you are doing. Currently this does not support partial data
                 # we have a read_file function but other components need some work
 
+
 loan_info_file = "loans.csv"
+if os.path.exists(loan_info_file):
+    os.remove(loan_info_file)
+    print("removed old", loan_info_file)
 
 lines_for_each_part = 500
-#------
+#------ 
 # Constants
 ''' parts is constant 5 because credit score grades are in 5 parts'''
 parts = 5
+
 
 def is_not_zero_file(fpath):
     return os.path.isfile(fpath) and os.path.getsize(fpath) > 0
@@ -47,7 +51,7 @@ def create_new(ppl):
     To help us do that we will be using
     The Credit Info credit grade that are mapped unto the points defined as follows
     A = 353-400+, 
-    B 317-353, 
+    B = 317-353, 
     C = 281-317, 
     D = 235-281, 
     E = 100-235
@@ -61,61 +65,60 @@ def create_new(ppl):
     A,B,C,D,E = 0,1,2,3,4
     
     for i in range(0,parts):
-        for j in range(math.ceil(i * lines_for_each_part),  math.ceil((i+1) * lines_for_each_part)):
+        for j in range(ceil(i * lines_for_each_part),  ceil((i+1) * lines_for_each_part)):
             
             per = {}
 
             if i == A:
-                if random.randint(0,15) == 1:
+                if randint(0,18) == 1:
                     # Maybe some random people dont get a loan in A
                     per['accepted'] = 0
-                    per['health_ins'] = 0
                 else:
                     per['accepted'] = 1
-                    per['health_ins'] = 1
-                per['creditscore'] = random.randint(353,400)
+                per['health_ins'] = randint(0,1)
+                per['creditscore'] = randint(353,400)
                 per['creditgrade'] = 'A'
             elif i == B:
-                if random.randint(0,7) == 1:
+                if randint(0,7) == 1:
                     # Maybe some random people dont get a loan in B
                     per['accepted'] = 0
-                    per['health_ins'] = 0
+                    per['health_ins'] = randint(0,1)
                     
                 else:
                     per['accepted'] = 1
                     per['health_ins'] = 1
                 
-                per['creditscore'] = random.randint(317,353)
+                per['creditscore'] = randint(317,353)
                 per['creditgrade'] = 'B'
 
-            elif i == C:
-                n = random.randint(0,1)
+            elif i == C: 
+                n = randint(0,1)
                 per['accepted'] = n
                 per['health_ins'] = n
-                per['creditscore'] = random.randint(281,317)
+                per['creditscore'] = randint(281,317)
                 
                 per['creditgrade'] = 'C'
 
             elif i == D:
-                if random.randint(0,3) == 1:
+                if randint(0,3) == 1:
                     per['accepted'] = 1
                     per['health_ins'] = 1
                 else:
                     per['accepted'] = 0
                     per['health_ins'] = 0
                 
-                per['creditscore'] = random.randint(235,281)
+                per['creditscore'] = randint(235,281)
                 per['creditgrade'] = 'D'
 
             elif i == E:
-                if random.randint(0,40) == 1:
+                if randint(0,40) == 1:
                     # Maybe some random people in E get a loan
                     per['accepted'] = 1
                     per['health_ins'] = 1
                 else:
                     per['accepted'] = 0
                     per['health_ins'] = 0
-                per['creditscore'] = random.randint(100,235)
+                per['creditscore'] = randint(100,235)
 
                 per['creditgrade'] = 'E'
             
@@ -124,26 +127,26 @@ def create_new(ppl):
 
 def gen_age(per):
     if per['accepted'] == 1:
-        return random.randint(18, 90)
+        return randint(18, 90)
     elif per['creditgrade'] == 'E':
-        return random.randint(55,90)
+        return randint(55,90)
     elif per['creditgrade'] == 'D':
-        if random.randint(0,4) == 2:
-            return random.randint(18,30)
-        return random.randint(55,90)
+        if randint(0,4) == 2:
+            return randint(18,30)
+        return randint(55,90)
     else:
-        return random.randint(18, 90)
+        return randint(18, 90)
 
 def gen_marital(per):
     if per['age'] > 78:
         return 0
     if per['accepted'] == 1:
-        if random.randint(0,6) == 3:
+        if randint(0,6) == 3:
             return 0
         else:
             return 1
     if per['accepted'] == 0:
-        if random.randint(0,2) == 1:
+        if randint(0,2) == 1:
             return 1
         else:
             return 0
@@ -153,28 +156,28 @@ def gen_cscore(per):
     The Credit Info Risk Factor Grade that are defined as follows
     A = 353-400+ points, B 317-353 points, C = 281-317, D = 235-281, E = 100-235'''
     if['creditgrade'] == 'A':
-        return random.randint(353,400)
+        return randint(353,400)
     if['creditgrade'] == 'B':
-        return random.randint(317,352)
+        return randint(317,352)
     if['creditgrade'] == 'C':
-        return random.randint(281,316)
+        return randint(281,316)
     if['creditgrade'] == 'D':
-        return random.randint(235,280)
+        return randint(235,280)
     if['creditgrade'] == 'E':
-        return random.randint(100,235)
+        return randint(100,235)
 def gen_amount(per):
     if per['accepted'] == 1:
         if per['age'] > 50 or per['age'] < 25:
             # Small loan half mil to 10 mil
-            return random.randint(500000,15000000)
+            return randint(500000,15000000)
         if per['creditgrade'] == 'E':
             # Small loan
-            return random.randint(100000,6000000)
+            return randint(100000,6000000)
         else:
             # Possibly bigger loan
-            return random.randint(1000000,70000000)
+            return randint(1000000,70000000)
     else:
-        return random.randint(1000000,100000000)    
+        return randint(1000000,100000000)    
 
 def add_to_file(ppl):
     with open(loan_info_file, 'w') as f:
@@ -209,5 +212,6 @@ def main():
     
     add_to_file(ppl)
     print("Length of file", loan_info_file, "is:" , len(ppl))
+    print("Last created at" ,str(datetime.now()))
     
 main()
